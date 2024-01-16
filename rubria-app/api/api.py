@@ -33,8 +33,20 @@ def squery_db(query, args=()):
 
 @app.route("/")
 def index():
-
     return {}, 200
+
+@app.route("/me")
+def get_current_user():
+    user_id = session.get("user_id")
+    if not user_id:
+        return {"error": "unauthorized"}, 401
+
+    user = squery_db("select * from users where user_id=?", [user_id])
+    if not user:
+        return {"error": "server error"}, 409
+
+    msg = "Welcome, " + user["first_name"] + " " + user["last_name"] + "."
+    return {"msg": msg}, 200
 
 @app.route("/register", methods=["POST"])
 def register_user():
@@ -44,7 +56,7 @@ def register_user():
     password = request.form.get("password")
 
     user = query_db("select * from users where email = ?", [email])
-    if user is not None:
+    if user:
         print("user exists")
         return {"error": "user already exists"}, 409
 
