@@ -1,2 +1,6 @@
 flask
 python-dotenv
+flask-jwt-extended
+redis
+flask-bcrypt
+flask-session
